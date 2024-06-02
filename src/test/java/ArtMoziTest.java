@@ -4,13 +4,9 @@ import api.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.params.provider.EnumSource;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -98,6 +94,32 @@ public class ArtMoziTest {
             loginPage.logout();
             assertFalse(loginPage.isLoggedIn());
         }
+    }
+
+    enum staticTestTarget {
+        LoginPage,
+        RegisterPage,
+        MinuteInbox
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(staticTestTarget.class)
+    public void staticPageTest(staticTestTarget target) {
+        PageBase page = null;
+        switch(target) {
+            case LoginPage:
+                page = new LoginPage(this.driver);
+                break;
+            case RegisterPage:
+                page = new RegisterPage(this.driver);
+                break;
+            case MinuteInbox:
+                page = new MinuteInbox(this.driver);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+        assertTrue(page.validateTitle());
     }
 
     @AfterEach

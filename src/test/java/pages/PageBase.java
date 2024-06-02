@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 
-abstract class PageBase {
+public abstract class PageBase {
 
     protected WebDriver driver;
     protected JavascriptExecutor js;
