@@ -1,41 +1,52 @@
 package pages;
-import exceptions.InvalidCredentialsException;
 
 import org.junit.*;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.By;
 
 public class LoginPage extends PageBase {
 
     private static class LocatorOf {
-        static By usernameInput = By.xpath("//form[@class='user-login-form']//input[@id='edit-name']");
-        static By passwordInput = By.xpath("//form[@class='user-login-form']//input[@id='edit-pass']");
-        static By loginButton   = By.xpath("//form[@class='user-login-form']//button[@id='edit-submit']");
+        static By statusIcon        = By.xpath("//div[@class='account--status']");
+        static By usernameInput     = By.xpath("//form[@class='user-login-form']//input[@id='edit-name']");
+        static By passwordInput     = By.xpath("//form[@class='user-login-form']//input[@id='edit-pass']");
+        static By accountMenuButton = By.xpath("//nav[@role='navigation']//a[@id='account-menu']");
+        static By logoutButton      = By.xpath("//ul[contains(@class,'menu--account')]//li//a[@href='/user/logout']");
     };
 
     public LoginPage(WebDriver driver) {
-        super(driver);
-        this.title = "Bejelentkezés";
+        super(driver, "https://artmozi.hu/user/login");
     }
 
-    public ProfilePage login(String username, String password) throws InvalidCredentialsException {
-        this.waitAndReturnElement(LocatorOf.usernameInput).sendKeys(username);
-        this.waitAndReturnElement(LocatorOf.passwordInput).sendKeys(password);
-        this.waitAndReturnElement(LocatorOf.loginButton).click();
-        if (this.failedLogin()) {
-            throw new InvalidCredentialsException();
-        }
-        return new ProfilePage(this.driver, username);
+    @Override
+    protected String expectedTitle() {
+        return "Bejelentkezés";
     }
 
-    private Boolean failedLogin() {
-        return this.getBodyText().contains("Ismeretlen felhasználó vagy hibás jelszó.");
+    public void login(String username, String password) {
+        WebElement usernameInput = this.waitAndReturnElement(LocatorOf.usernameInput);
+        WebElement passwordInput = this.waitAndReturnElement(LocatorOf.passwordInput);
+        usernameInput.sendKeys(username);
+        passwordInput.sendKeys(password);
+        passwordInput.submit();
+    }
+
+    public void logout() {
+        this.waitAndReturnElement(LocatorOf.accountMenuButton).click();
+        this.waitAndReturnElement(LocatorOf.logoutButton).click();
+    }
+
+    public String getStatusColor() {
+        WebElement statusIcon = this.waitAndReturnElement(LocatorOf.statusIcon);
+        return statusIcon.getCssValue("background-color");
+    }
+
+    public Boolean isLoggedIn() {
+        WebElement statusIcon = this.waitAndReturnElement(LocatorOf.statusIcon);
+        return statusIcon.getCssValue("background-color").equals("rgba(92, 184, 92, 1)"); // green
     }
 }

@@ -4,6 +4,8 @@ import org.junit.*;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -13,27 +15,30 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 
 import java.util.List;
+import org.openqa.selenium.interactions.Actions;
 
-import java.util.concurrent.TimeUnit;
+import java.io.File;
+import java.io.IOException;
+import org.apache.commons.io.FileUtils;
 
-class PageBase {
+abstract class PageBase {
 
     protected WebDriver driver;
+    protected JavascriptExecutor js;
     protected WebDriverWait wait;
-    protected int defaultWaitDuration;
-    protected TimeUnit defaultWaitUnits;
-    protected String title;
 
-    public PageBase(WebDriver driver) {
+    public PageBase(WebDriver driver, String URL) {
         this.driver = driver;
-        this.defaultWaitDuration = 2;
-        this.defaultWaitUnits = TimeUnit.SECONDS;
-        this.wait = new WebDriverWait(driver, defaultWaitDuration);
+        this.js = (JavascriptExecutor) driver;
+        this.wait = new WebDriverWait(driver, 20);
+        this.driver.get(URL);
     }
 
     public Boolean validateTitle() {
-        return this.driver.getTitle().contains(this.title);
+        return this.driver.getTitle().contains(this.expectedTitle());
     }
+
+    abstract protected String expectedTitle();
 
     protected List<WebElement> returnElements(By locator) {
         return this.driver.findElements(locator);
@@ -53,11 +58,20 @@ class PageBase {
         return bodyElement.getText();
     }
 
-    public void implicitlyWait(int n, TimeUnit unit) {
-        this.driver.manage().timeouts().implicitlyWait(n, unit);
+    public void clickOn(WebElement target) {
+        js.executeScript("arguments[0].click();", target);
     }
 
-    public void implicitlyWait() {
-        this.implicitlyWait(this.defaultWaitDuration, this.defaultWaitUnits);
+    public String getCurrentUrl() {
+        return this.driver.getCurrentUrl();
+    }
+
+    public void screenshot(String outputPath) {
+        try {
+            File scrFile = ((TakesScreenshot)(this.driver)).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(scrFile, new File(outputPath));
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
