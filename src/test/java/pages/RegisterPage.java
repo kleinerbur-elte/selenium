@@ -1,5 +1,4 @@
 package pages;
-import exceptions.InvalidCredentialsException;
 
 import org.junit.*;
 import org.openqa.selenium.JavascriptExecutor;

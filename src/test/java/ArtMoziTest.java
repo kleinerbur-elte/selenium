@@ -1,6 +1,5 @@
 import pages.*;
 import api.*;
-import exceptions.*;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,16 +21,13 @@ import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+
 import java.util.*;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-
-import okhttp3.Response;
-import java.io.IOException;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -55,7 +51,7 @@ public class ArtMoziTest {
     }
 
     @Test
-    public void testRegisterWithAPI() throws NoSuchAlgorithmException, IOException, InterruptedException {
+    public void testRegisterWithAPI() throws NoSuchAlgorithmException {
         TempMail mail = new TempMail(this.tempMailAccessKey);
         String emailAddress = mail.getEmailAddress();
         String username     = mail.getUsername();
