@@ -1,5 +1,7 @@
 package pages;
 
+import data.LoginData;
+
 import org.junit.*;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -27,11 +29,11 @@ public class LoginPage extends PageBase {
         return "Bejelentkezés";
     }
 
-    public void login(String username, String password) {
+    public void login(LoginData data) {
         WebElement usernameInput = this.waitAndReturnElement(LocatorOf.usernameInput);
         WebElement passwordInput = this.waitAndReturnElement(LocatorOf.passwordInput);
-        usernameInput.sendKeys(username);
-        passwordInput.sendKeys(password);
+        usernameInput.sendKeys(data.getUsername());
+        passwordInput.sendKeys(data.getPassword());
         passwordInput.submit();
     }
 

@@ -1,5 +1,7 @@
 package pages;
 
+import data.RegistrationData;
+
 import org.junit.*;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -15,13 +17,13 @@ import org.openqa.selenium.By;
 public class RegisterPage extends PageBase {
 
     private static class LocatorOf {
-        static final By firstnameInput  = By.xpath("//form[@action='/user/register']//input[@id='edit-art-forename-0-value']");
-        static final By surnameInput    = By.xpath("//form[@action='/user/register']//input[@id='edit-art-surname-0-value']");
-        static final By emailInput      = By.xpath("//form[@action='/user/register']//input[@id='edit-mail']");
-        static final By usernameInput   = By.xpath("//form[@action='/user/register']//input[@id='edit-name']");
-        static final By newsletterInput = By.xpath("//form[@action='/user/register']//label[@for='edit-art-mailchimp-0-value-subscribe']");
-        static final By privPolicyInput = By.xpath("//form[@action='/user/register']//label[@for='edit-art-privacy-policy-value']");
-        static final By registerButton  = By.xpath("//form[@action='/user/register']//button[@id='edit-submit']");
+        static By firstNameInput        = By.xpath("//form[@action='/user/register']//input[@id='edit-art-forename-0-value']");
+        static By lastNameInput         = By.xpath("//form[@action='/user/register']//input[@id='edit-art-surname-0-value']");
+        static By emailInput            = By.xpath("//form[@action='/user/register']//input[@id='edit-mail']");
+        static By usernameInput         = By.xpath("//form[@action='/user/register']//input[@id='edit-name']");
+        static By newsletterCheckbox    = By.xpath("//form[@action='/user/register']//label[@for='edit-art-mailchimp-0-value-subscribe']");
+        static By privacyPolicyCheckbox = By.xpath("//form[@action='/user/register']//label[@for='edit-art-privacy-policy-value']");
+        static By registerButton        = By.xpath("//form[@action='/user/register']//button[@id='edit-submit']");
     };
 
     public RegisterPage(WebDriver driver) {
@@ -33,15 +35,23 @@ public class RegisterPage extends PageBase {
         return "Új fiók létrehozása";
     }
 
-    public void register(String firstname, String surname, String email, String username, Boolean newsletter) {
-        this.waitAndReturnElement(LocatorOf.firstnameInput).sendKeys(firstname);
-        this.waitAndReturnElement(LocatorOf.emailInput).sendKeys(email);
-        this.waitAndReturnElement(LocatorOf.usernameInput).sendKeys(username);
-        this.waitAndReturnElement(LocatorOf.surnameInput).sendKeys(surname);
-        if (newsletter) {
-            this.clickOn(this.waitAndReturnElement(LocatorOf.newsletterInput));
+    public void register(RegistrationData data) {
+        WebElement firstNameInput        = this.waitAndReturnElement(LocatorOf.firstNameInput);
+        WebElement lastNameInput         = this.waitAndReturnElement(LocatorOf.lastNameInput);
+        WebElement emailInput            = this.waitAndReturnElement(LocatorOf.emailInput);
+        WebElement usernameInput         = this.waitAndReturnElement(LocatorOf.usernameInput);
+        WebElement newsletterCheckbox    = this.waitAndReturnElement(LocatorOf.newsletterCheckbox);
+        WebElement privacyPolicyCheckbox = this.waitAndReturnElement(LocatorOf.privacyPolicyCheckbox);
+        WebElement registerButton        = this.waitAndReturnElement(LocatorOf.registerButton);
+
+        firstNameInput.sendKeys(data.getFirstName());
+        lastNameInput.sendKeys(data.getLastName());
+        emailInput.sendKeys(data.getEmail());
+        usernameInput.sendKeys(data.getUsername());
+        this.clickOn(privacyPolicyCheckbox);
+        if (data.isSubscribedToNewsletter()) {
+            this.clickOn(newsletterCheckbox);
         }
-        this.clickOn(this.waitAndReturnElement(LocatorOf.privPolicyInput));
-        this.clickOn(this.waitAndReturnElement(LocatorOf.registerButton));
+        this.clickOn(registerButton);
     }
 }

@@ -14,9 +14,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 
-import java.util.List;
-import org.openqa.selenium.interactions.Actions;
-
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
@@ -40,16 +37,8 @@ public abstract class PageBase {
 
     abstract protected String expectedTitle();
 
-    protected List<WebElement> returnElements(By locator) {
-        return this.driver.findElements(locator);
-    }
-
     protected WebElement waitAndReturnElement(By locator) {
         this.wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-        return this.driver.findElement(locator);
-    }
-
-    protected WebElement returnElement(By locator) throws NoSuchElementException {
         return this.driver.findElement(locator);
     }
 
@@ -60,10 +49,6 @@ public abstract class PageBase {
 
     public void clickOn(WebElement target) {
         js.executeScript("arguments[0].click();", target);
-    }
-
-    public String getCurrentUrl() {
-        return this.driver.getCurrentUrl();
     }
 
     public void screenshot(String outputPath) {

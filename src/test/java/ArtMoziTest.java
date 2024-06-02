@@ -1,5 +1,6 @@
-import pages.*;
 import api.*;
+import data.*;
+import pages.*;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -48,14 +49,16 @@ public class ArtMoziTest {
 
     @Test
     public void testRegisterWithAPI() throws NoSuchAlgorithmException {
-        TempMail mail = new TempMail(this.tempMailAccessKey);
-        String emailAddress = mail.getEmailAddress();
-        String username     = mail.getUsername();
+        RegistrationData data = new RegistrationData();
+
+        TempMail tempMail = new TempMail(this.tempMailAccessKey);
+        data.setEmail(tempMail.getEmailAddress());
+        data.setUsername(tempMail.getUsername());
 
         RegisterPage registerPage = new RegisterPage(this.driver);
-        registerPage.register("John", "Doe", emailAddress, username, false);
+        registerPage.register(data);
 
-        String link = mail.waitAndGetConfirmationLink(15);
+        String link = tempMail.waitAndGetConfirmationLink(15);
         ConfirmationPage confirmationPage = new ConfirmationPage(this.driver, link);
         assertTrue(confirmationPage.validateTitle());
     }
@@ -63,16 +66,18 @@ public class ArtMoziTest {
     @Disabled("Page would crash upon switching tabs")
     @Test
     public void testRegisterThroughUI() {
+        RegistrationData data = new RegistrationData();
+
         MinuteInbox minuteInbox = new MinuteInbox(this.driver);
-        String emailAddress = minuteInbox.getEmailAddress();
-        String username     = minuteInbox.getUsername();
+        data.setEmail(minuteInbox.getEmailAddress());
+        data.setUsername(minuteInbox.getUsername());
 
         ((JavascriptExecutor)(this.driver)).executeScript("window.open()");
         ArrayList<String> windows = new ArrayList<String>(this.driver.getWindowHandles());
         this.driver.switchTo().window(windows.get(1));
 
         RegisterPage registerPage = new RegisterPage(this.driver);
-        registerPage.register("John", "Doe", emailAddress, username, false);
+        registerPage.register(data);
 
         this.driver.switchTo().window(windows.get(0));
 
@@ -86,7 +91,7 @@ public class ArtMoziTest {
         LoginPage loginPage = new LoginPage(this.driver);
         assertTrue(loginPage.validateTitle());
         assertFalse(loginPage.isLoggedIn());
-        loginPage.login(username, password);
+        loginPage.login(new LoginData(username, password));
         if (shouldFail) {
             assertFalse(loginPage.isLoggedIn());
         } else {
@@ -101,7 +106,6 @@ public class ArtMoziTest {
         RegisterPage,
         MinuteInbox
     }
-
     @ParameterizedTest(name = "{0}")
     @EnumSource(staticTestTarget.class)
     public void staticPageTest(staticTestTarget target) {
